@@ -27,8 +27,9 @@ typedef struct
 // 외부 참조 데이터
 //
 extern UART_HandleTypeDef huart1;
+extern UART_HandleTypeDef huart2;
 extern DMA_HandleTypeDef hdma_usart1_rx;
-
+extern DMA_HandleTypeDef hdma_usart2_rx;
 
 // 내부 참조 데이터 
 static bool is_init = false;
@@ -81,6 +82,37 @@ bool uartOpen(uint8_t ch, uint32_t baud)
       //
       uart_tbl[ch].p_huart                = &huart1;
       uart_tbl[ch].p_hdma_rx              = &hdma_usart1_rx;
+      uart_tbl[ch].p_huart->Init.BaudRate = baud;
+      uart_tbl[ch].baud                   = baud;
+      uart_tbl[ch].is_open                = false;
+      if (HAL_UART_Init(uart_tbl[ch].p_huart) == HAL_OK)
+      {
+        uart_tbl[ch].is_open = true;
+      }
+
+      if (uart_tbl[ch].is_open)
+      {
+        HAL_StatusTypeDef hal_ret;
+
+        hal_ret = HAL_UART_Receive_DMA(uart_tbl[ch].p_huart, uart_tbl[ch].q_rx_buf, UART_RX_BUF_LENGTH);
+        if (hal_ret != HAL_OK)
+        {
+          uart_tbl[ch].is_open = false;
+        }  
+
+        // 수신버퍼 설정
+        //
+        uart_tbl[ch].q_rx.in  = uart_tbl[ch].q_rx.len - uart_tbl[ch].p_hdma_rx->Instance->NDTR;
+        uart_tbl[ch].q_rx.out = uart_tbl[ch].q_rx.in;
+      }
+      ret = uart_tbl[ch].is_open;
+      break;
+
+    case _DEF_UART2:
+      // UART 하드웨어 초기화
+      //
+      uart_tbl[ch].p_huart                = &huart2;
+      uart_tbl[ch].p_hdma_rx              = &hdma_usart2_rx;
       uart_tbl[ch].p_huart->Init.BaudRate = baud;
       uart_tbl[ch].baud                   = baud;
       uart_tbl[ch].is_open                = false;

@@ -30,9 +30,9 @@ void apMain(void)
     MX_LWIP_Process();
     MX_USB_HOST_Process();
 
-    if (uartAvailable(HW_UART_CH_232))
+    if (uartAvailable(HW_UART_CH_485))
     {
-      uartPrintf(HW_UART_CH_232, "rx : 0x%X\n", uartRead(HW_UART_CH_232));
+      uartPrintf(HW_UART_CH_485, "rx : 0x%X\n", uartRead(HW_UART_CH_485));
     }
   }
 } 

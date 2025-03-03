@@ -3,7 +3,7 @@
 
 #ifdef _USE_HW_UART
 #include "qbuffer.h"
-
+#include "gpio.h"
 
 #define UART_RX_BUF_LENGTH      512
 
@@ -15,6 +15,7 @@ typedef struct
 {
   bool     is_open;
   uint32_t baud;
+  int8_t   dir;
 
   qbuffer_t q_rx;
   uint8_t   q_rx_buf[UART_RX_BUF_LENGTH];
@@ -28,8 +29,10 @@ typedef struct
 //
 extern UART_HandleTypeDef huart1;
 extern UART_HandleTypeDef huart2;
+extern UART_HandleTypeDef huart3;
 extern DMA_HandleTypeDef hdma_usart1_rx;
 extern DMA_HandleTypeDef hdma_usart2_rx;
+extern DMA_HandleTypeDef hdma_usart3_rx;
 
 // 내부 참조 데이터 
 static bool is_init = false;
@@ -49,6 +52,7 @@ bool uartInit(void)
     uart_tbl[i].baud      = 115200;
     uart_tbl[i].p_huart   = NULL;
     uart_tbl[i].p_hdma_rx = NULL;
+    uart_tbl[i].dir       = -1;
 
     qbufferCreate(&uart_tbl[i].q_rx, &uart_tbl[i].q_rx_buf[0], UART_RX_BUF_LENGTH);
   }
@@ -116,6 +120,38 @@ bool uartOpen(uint8_t ch, uint32_t baud)
       uart_tbl[ch].p_huart->Init.BaudRate = baud;
       uart_tbl[ch].baud                   = baud;
       uart_tbl[ch].is_open                = false;
+      if (HAL_UART_Init(uart_tbl[ch].p_huart) == HAL_OK)
+      {
+        uart_tbl[ch].is_open = true;
+      }
+
+      if (uart_tbl[ch].is_open)
+      {
+        HAL_StatusTypeDef hal_ret;
+
+        hal_ret = HAL_UART_Receive_DMA(uart_tbl[ch].p_huart, uart_tbl[ch].q_rx_buf, UART_RX_BUF_LENGTH);
+        if (hal_ret != HAL_OK)
+        {
+          uart_tbl[ch].is_open = false;
+        }  
+
+        // 수신버퍼 설정
+        //
+        uart_tbl[ch].q_rx.in  = uart_tbl[ch].q_rx.len - uart_tbl[ch].p_hdma_rx->Instance->NDTR;
+        uart_tbl[ch].q_rx.out = uart_tbl[ch].q_rx.in;
+      }
+      ret = uart_tbl[ch].is_open;
+      break;
+
+    case _DEF_UART3:
+      // UART 하드웨어 초기화
+      //
+      uart_tbl[ch].p_huart                = &huart3;
+      uart_tbl[ch].p_hdma_rx              = &hdma_usart3_rx;
+      uart_tbl[ch].p_huart->Init.BaudRate = baud;
+      uart_tbl[ch].baud                   = baud;
+      uart_tbl[ch].is_open                = false;
+      uart_tbl[ch].dir                    = RS485_DIR;
       if (HAL_UART_Init(uart_tbl[ch].p_huart) == HAL_OK)
       {
         uart_tbl[ch].is_open = true;
@@ -213,9 +249,19 @@ uint32_t uartWrite(uint8_t ch, uint8_t *p_data, uint32_t length)
   if (ch >= UART_MAX_CH)
     return false;  
 
+  if (uart_tbl[ch].dir >= 0)
+  {
+    gpioPinWrite(uart_tbl[ch].dir, _DEF_HIGH);
+  }
+
   if (HAL_UART_Transmit(uart_tbl[ch].p_huart, p_data, length, 100) == HAL_OK)
   {
     ret = length;
+  }
+
+  if (uart_tbl[ch].dir >= 0)
+  {
+    gpioPinWrite(uart_tbl[ch].dir, _DEF_LOW);
   }
 
   return ret;

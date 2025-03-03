@@ -61,6 +61,8 @@ void MX_SDIO_SD_Init(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define RS485_DIR_Pin GPIO_PIN_3
+#define RS485_DIR_GPIO_Port GPIOE
 #define LED_Pin GPIO_PIN_4
 #define LED_GPIO_Port GPIOE
 #define LED1_Pin GPIO_PIN_12

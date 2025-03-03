@@ -19,15 +19,15 @@ typedef struct
   bool          init_value;
 
   GpioPinName_t pin_name;
-  const char   *p_name_str;  
+  const char   *p_name_str;
 } gpio_tbl_t;
 
-
 const gpio_tbl_t gpio_tbl[GPIO_MAX_CH] =
-    {
-        {GPIOA, GPIO_PIN_15,  _DEF_OUTPUT, GPIO_PIN_SET, GPIO_PIN_RESET, _DEF_HIGH, NAME_DEF(SPI_FLASH_CS)},   
-        {GPIOC, GPIO_PIN_13,  _DEF_INPUT,  GPIO_PIN_SET, GPIO_PIN_RESET, _DEF_HIGH, NAME_DEF(SD_CD)},              
-    };
+{
+  {GPIOA, GPIO_PIN_15, _DEF_OUTPUT, GPIO_PIN_SET, GPIO_PIN_RESET, _DEF_HIGH, NAME_DEF(SPI_FLASH_CS)},
+  {GPIOC, GPIO_PIN_13, _DEF_INPUT,  GPIO_PIN_SET, GPIO_PIN_RESET, _DEF_HIGH, NAME_DEF(SD_CD)       },
+  {GPIOE, GPIO_PIN_3,  _DEF_OUTPUT, GPIO_PIN_SET, GPIO_PIN_RESET, _DEF_LOW,  NAME_DEF(RS485_DIR)   },
+};
 
 
 #ifdef _USE_HW_CLI

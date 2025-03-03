@@ -20,7 +20,7 @@ extern "C" {
 #include "buzzer.h"
 #include "sd.h"
 #include "lcd.h"
-
+#include "ws2812.h"
 
 bool hwInit(void);
 

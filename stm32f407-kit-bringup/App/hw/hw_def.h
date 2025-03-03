@@ -52,6 +52,9 @@
 #define      HW_LCD_WIDTH           128
 #define      HW_LCD_HEIGHT          32
 
+#define _USE_HW_WS2812
+#define     HW_WS2812_MAX_CH        2
+
 
 
 //-- USE CLI
@@ -63,6 +66,7 @@
 #define _USE_CLI_HW_RTC             1
 #define _USE_CLI_HW_BUZZER          1
 #define _USE_CLI_HW_SD              1
+#define _USE_CLI_HW_WS2812          1
 
 
 typedef enum

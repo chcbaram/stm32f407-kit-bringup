@@ -1,6 +1,7 @@
 #include "ap.h"
+#include "lwip.h"
+#include "usb_host.h"
 
-extern void MX_LWIP_Process(void);
 
 void apInit(void)
 {
@@ -27,5 +28,6 @@ void apMain(void)
     sdUpdate();
 
     MX_LWIP_Process();
+    MX_USB_HOST_Process();
   }
 } 

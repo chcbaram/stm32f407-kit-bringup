@@ -26,7 +26,9 @@ bool hwInit(void)
   buttonInit();
   buzzerInit();
   sdInit();
-
+  lcdInit();
+  lcdSetFps(20);
+  
   return true;
 }
 

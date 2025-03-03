@@ -47,6 +47,11 @@
 #define      HW_RTC_BOOT_MODE       RTC_BKP_DR3
 #define      HW_RTC_RESET_BITS      RTC_BKP_DR4
 
+#define _USE_HW_LCD
+#define _USE_HW_SSD1306
+#define      HW_LCD_WIDTH           128
+#define      HW_LCD_HEIGHT          32
+
 
 
 //-- USE CLI

@@ -47,7 +47,7 @@ file(GLOB SRC_FILES CONFIGURE_DEPENDS
   App/hw/*.c
   App/hw/src/*.c
 
-  App/hw/src/imu/*.c
+  App/hw/src/lcd/*.c
 
   # FatFs
   App/hw/src/fatfs/*.c

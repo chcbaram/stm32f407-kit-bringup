@@ -19,6 +19,8 @@ extern "C" {
 #include "rtc.h"
 #include "buzzer.h"
 #include "sd.h"
+#include "lcd.h"
+
 
 bool hwInit(void);
 

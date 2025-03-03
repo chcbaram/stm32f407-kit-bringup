@@ -29,6 +29,7 @@ bool hwInit(void)
   lcdInit();
   lcdSetFps(20);
   ws2812Init();
+  canInit();
 
   return true;
 }

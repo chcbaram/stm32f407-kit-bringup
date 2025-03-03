@@ -21,6 +21,8 @@ extern "C" {
 #include "sd.h"
 #include "lcd.h"
 #include "ws2812.h"
+#include "can.h"
+
 
 bool hwInit(void);
 

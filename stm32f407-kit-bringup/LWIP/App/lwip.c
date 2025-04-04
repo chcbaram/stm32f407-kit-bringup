@@ -63,13 +63,20 @@ void DHCP_Process(struct netif *netif)
   {
     case DHCP_START:
     {
+      int err_dhcp;
+
       printf("  State: Looking for DHCP server ...\n");
 
       ip_addr_set_zero_ip4(&netif->ip_addr);
       ip_addr_set_zero_ip4(&netif->netmask);
       ip_addr_set_zero_ip4(&netif->gw);
-      dhcp_start(netif);
-      DHCP_state = DHCP_WAIT_ADDRESS;
+
+      dhcp_stop(netif);
+      err_dhcp = dhcp_start(netif);      
+      if (err_dhcp == ERR_OK)
+      {
+        DHCP_state = DHCP_WAIT_ADDRESS;
+      }
     }
     break;
 
@@ -106,7 +113,7 @@ void DHCP_Process(struct netif *netif)
   case DHCP_LINK_DOWN:
     {
       DHCP_state = DHCP_OFF;
-      printf("The network cable is not connected \n");
+      printf("  State: dhcp_off \n");
     }
     break;
   default: break;
@@ -155,7 +162,7 @@ void MX_LWIP_Init(void)
   dhcp_start(&gnetif);
 
 /* USER CODE BEGIN 3 */
-
+  netif_clear_flags(&gnetif, NETIF_FLAG_LINK_UP);
 /* USER CODE END 3 */
 }
 
@@ -226,6 +233,7 @@ static void ethernet_link_status_updated(struct netif *netif)
   {
 /* USER CODE BEGIN 5 */
     logPrintf("netif_is_up()\n");
+
     DHCP_state = DHCP_START;
     printf("IP: %s\n", ip4addr_ntoa(netif_ip4_addr(netif)));    
 /* USER CODE END 5 */
